@@ -6,7 +6,7 @@
         <el-button type="primary" size="large"> 新建用户 </el-button>
       </div>
       <div class="table">
-        <el-table :data="usersList" border style="width: 100%">
+        <el-table :data="obj.newList" border style="width: 100%">
           <el-table-column align="center" type="selection" width="55" />
           <el-table-column
             align="center"
@@ -53,11 +53,19 @@
             <el-button size="small" icon="Edit" type="primary" text>
               编辑
             </el-button>
-            <el-button size="small" icon="Delect" type="danger" text>
+            <el-button size="small" icon="Delete" type="danger" text>
               删除
             </el-button>
           </el-table-column>
         </el-table>
+      </div>
+      <div class="pagination">
+        <el-pagination
+          v-model:current-page="currentPage"
+          layout="total, prev, pager, next"
+          :total="usersTotalCount"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </el-card>
   </div>
@@ -65,10 +73,27 @@
 
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
+import { ref, watch, reactive } from 'vue'
 import userSystemStore from '@/store/main/system/system'
 const systemStore = userSystemStore()
 systemStore.getUserListAction()
-const { usersList } = storeToRefs(systemStore)
+const { usersList, usersTotalCount } = storeToRefs(systemStore)
+// const obj = reactive({ ListInfo: '' })
+const currentPage = ref(1)
+const pageSize = 10
+const obj = reactive({ page: 1, newList: [] })
+function handleCurrentChange(value: any) {
+  obj.page = value
+  obj.newList = systemStore.currentChange(obj.page, pageSize)
+}
+watch(
+  usersList,
+  () => {
+    // obj.ListInfo = systemStore.currentChange(pageSize)
+    obj.newList = systemStore.currentChange(obj.page, pageSize)
+  },
+  { immediate: true }
+)
 </script>
 
 <style lang="less" scoped>
@@ -76,17 +101,20 @@ const { usersList } = storeToRefs(systemStore)
   background-color: #fff;
   padding: 0 20px;
   border-radius: 8px;
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-  }
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 .table {
   margin-top: 24px;
   .el-button {
     margin-left: 0;
   }
+}
+.pagination {
+  display: flex;
+  justify-content: center;
 }
 </style>

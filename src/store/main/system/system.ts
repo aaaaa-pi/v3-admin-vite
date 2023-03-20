@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { getUserListData } from '@/service/main/system/system'
+import { pagination } from '@/utils/pagination'
 import type { ISystemStore } from './type'
 const userSystemStore = defineStore('system', {
   state: (): ISystemStore => ({
@@ -13,6 +14,9 @@ const userSystemStore = defineStore('system', {
       const totalCount = list.length
       this.usersList = list
       this.usersTotalCount = totalCount
+    },
+    currentChange(value: any, pageSize: number) {
+      return pagination(value, pageSize, this.usersList)
     }
   }
 })
