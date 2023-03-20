@@ -60,7 +60,13 @@
       </el-form>
       <!-- 按钮 -->
       <div class="btns">
-        <el-button type="primary" size="large" icon="Search">查询</el-button>
+        <el-button
+          type="primary"
+          size="large"
+          icon="Search"
+          @click="handleQueryClick"
+          >查询</el-button
+        >
         <el-button size="large" icon="refresh" @click="handleResetClick">
           重置
         </el-button>
@@ -83,6 +89,10 @@ const searchForm = reactive({
 const formRef = ref<InstanceType<typeof ElForm>>()
 function handleResetClick() {
   formRef.value?.resetFields()
+}
+const emit = defineEmits(['queryClick', 'resetClick'])
+function handleQueryClick() {
+  emit('queryClick', searchForm)
 }
 </script>
 

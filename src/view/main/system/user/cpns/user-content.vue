@@ -78,22 +78,36 @@ import userSystemStore from '@/store/main/system/system'
 const systemStore = userSystemStore()
 systemStore.getUserListAction()
 const { usersList, usersTotalCount } = storeToRefs(systemStore)
-// const obj = reactive({ ListInfo: '' })
 const currentPage = ref(1)
-const pageSize = 10
-const obj = reactive({ page: 1, newList: [] })
-function handleCurrentChange(value: any) {
-  obj.page = value
-  obj.newList = systemStore.currentChange(obj.page, pageSize)
+const pageSize = ref(10)
+const obj = reactive({ newList: [] })
+// 分页器功能
+function handleCurrentChange() {
+  obj.newList = systemStore.currentChange(currentPage.value, pageSize.value)
 }
 watch(
   usersList,
   () => {
     // obj.ListInfo = systemStore.currentChange(pageSize)
-    obj.newList = systemStore.currentChange(obj.page, pageSize)
+    obj.newList = systemStore.currentChange(currentPage.value, pageSize.value)
   },
   { immediate: true }
 )
+// function fetchUserListData(formData: any = {}) {
+//   formData user-search传入的数据
+//   1.获取offset/size
+//   const size = pageSize.value
+//   const offset = (currentPage.value - 1) * size
+//   const pageInfo = { size, offset }
+
+//   2.发起网络请求
+//   const queryInfo = { ...pageInfo, ...Data }
+//   systemStore.postUserListAction(queryInfo)
+// }
+function fetchUserListData() {
+  systemStore.getUserListAction()
+}
+defineExpose({ fetchUserListData })
 </script>
 
 <style lang="less" scoped>
